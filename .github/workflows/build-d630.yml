@@ -1,0 +1,62 @@
+name: Build Alpine for Dell Latitude D630
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "alpine-d630-*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: alpine-d630-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    env:
+      ALPINE_D630_BUILD_ROOT: ${{ runner.temp }}/alpine-d630
+
+    steps:
+      - name: Checkout project source
+        uses: actions/checkout@v4
+
+      - name: Cache Alpine sources and kernel distfiles
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ runner.temp }}/alpine-d630/aports
+            ${{ runner.temp }}/alpine-d630/work/distfiles
+          key: alpine-d630-${{ hashFiles('config/target.env') }}
+          restore-keys: |
+            alpine-d630-
+
+      - name: Build D630 kernel package
+        run: ./scripts/build-linux-d630.sh
+
+      - name: Build legacy-BIOS ISO
+        run: ./scripts/build-d630-iso.sh
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$ALPINE_D630_BUILD_ROOT/output"
+          find . -maxdepth 1 -type f -name '*.iso' -print0 \
+            | sort -z \
+            | xargs -0 -r sha256sum > SHA256SUMS
+          test -s SHA256SUMS
+          cat SHA256SUMS
+
+      - name: Upload ISO and checksums
+        uses: actions/upload-artifact@v4
+        with:
+          name: alpine-d630-${{ github.run_number }}
+          path: |
+            ${{ runner.temp }}/alpine-d630/output/*.iso
+            ${{ runner.temp }}/alpine-d630/output/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14

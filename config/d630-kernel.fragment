@@ -1,0 +1,49 @@
+# Dell Latitude D630 / Intel Core 2 Duo T7250
+# Linux 6.18 uses KCFLAGS for the Core 2 target; no MCORE2 selector exists.
+# Keep the local/native CPU selector disabled on the AMD EPYC build host.
+# CONFIG_X86_NATIVE_CPU is not set
+
+# CPU frequency control used by the D630's ACPI P-state interface.
+CONFIG_CPU_FREQ=y
+CONFIG_CPU_FREQ_GOV_USERSPACE=y
+CONFIG_X86_ACPI_CPUFREQ=m
+
+# Legacy Intel PRO/Wireless 3945ABG driver (IWL3945 selects IWLEGACY).
+CONFIG_IWL3945=m
+
+# Early Intel CPU microcode loader; MICROCODE defaults on for Intel CPUs.
+CONFIG_MICROCODE=y
+
+# D630 storage and filesystem support.
+CONFIG_ATA=m
+CONFIG_ATA_PIIX=m
+CONFIG_SATA_AHCI=m
+CONFIG_USB_STORAGE=m
+CONFIG_EXT4_FS=m
+CONFIG_BTRFS_FS=m
+CONFIG_NTFS3_FS=m
+CONFIG_NTFS3_LZX_XPRESS=y
+CONFIG_NTFS3_FS_POSIX_ACL=y
+CONFIG_FAT_FS=y
+CONFIG_MSDOS_FS=y
+CONFIG_VFAT_FS=m
+CONFIG_EXFAT_FS=m
+CONFIG_ISO9660_FS=m
+CONFIG_SQUASHFS=m
+CONFIG_FUSE_FS=m
+CONFIG_CUSE=m
+CONFIG_OVERLAY_FS=m
+CONFIG_AUTOFS_FS=y
+CONFIG_NLS=y
+CONFIG_NLS_UTF8=y
+CONFIG_NLS_CODEPAGE_437=y
+
+# Keep zram built in, with all current compressors and zstd as the default.
+CONFIG_ZRAM=y
+CONFIG_ZRAM_BACKEND_LZ4=y
+CONFIG_ZRAM_BACKEND_LZ4HC=y
+CONFIG_ZRAM_BACKEND_ZSTD=y
+CONFIG_ZRAM_BACKEND_DEFLATE=y
+CONFIG_ZRAM_BACKEND_842=y
+CONFIG_ZRAM_BACKEND_LZO=y
+CONFIG_ZRAM_DEF_COMP_ZSTD=y
