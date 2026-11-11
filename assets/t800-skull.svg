@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 220" width="200" height="220">
+  <defs>
+    <linearGradient id="bone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#b0b0b0"/>
+      <stop offset="100%" stop-color="#707070"/>
+    </linearGradient>
+    <radialGradient id="eye" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ff4400"/>
+      <stop offset="60%" stop-color="#cc0000"/>
+      <stop offset="100%" stop-color="#330000"/>
+    </radialGradient>
+  </defs>
+  <!-- cranium -->
+  <ellipse cx="100" cy="80" rx="65" ry="70" fill="url(#bone)" stroke="#555" stroke-width="2"/>
+  <!-- jaw -->
+  <path d="M55 130 Q55 175 75 190 Q90 200 100 200 Q110 200 125 190 Q145 175 145 130 Z" fill="url(#bone)" stroke="#555" stroke-width="2"/>
+  <!-- jaw line -->
+  <line x1="55" y1="130" x2="145" y2="130" stroke="#555" stroke-width="2"/>
+  <!-- eye sockets -->
+  <ellipse cx="75" cy="85" rx="18" ry="14" fill="#111"/>
+  <ellipse cx="125" cy="85" rx="18" ry="14" fill="#111"/>
+  <!-- glowing eyes -->
+  <ellipse cx="75" cy="85" rx="12" ry="9" fill="url(#eye)"/>
+  <ellipse cx="125" cy="85" rx="12" ry="9" fill="url(#eye)"/>
+  <!-- eye glints -->
+  <circle cx="78" cy="82" r="3" fill="#ff8866" opacity="0.7"/>
+  <circle cx="128" cy="82" r="3" fill="#ff8866" opacity="0.7"/>
+  <!-- nose cavity -->
+  <path d="M95 105 L100 120 L105 105 Z" fill="#333"/>
+  <!-- teeth -->
+  <g fill="#999" stroke="#555" stroke-width="1">
+    <rect x="70" y="132" width="12" height="14" rx="2"/>
+    <rect x="84" y="132" width="12" height="14" rx="2"/>
+    <rect x="98" y="132" width="12" height="14" rx="2"/>
+    <rect x="112" y="132" width="12" height="14" rx="2"/>
+    <rect x="126" y="132" width="12" height="14" rx="2"/>
+  </g>
+  <!-- mechanical seams -->
+  <line x1="100" y1="10" x2="100" y2="45" stroke="#666" stroke-width="1.5"/>
+  <line x1="60" y1="55" x2="55" y2="75" stroke="#666" stroke-width="1.5"/>
+  <line x1="140" y1="55" x2="145" y2="75" stroke="#666" stroke-width="1.5"/>
+  <!-- temple bolts -->
+  <circle cx="45" cy="80" r="4" fill="#666" stroke="#444" stroke-width="1"/>
+  <circle cx="155" cy="80" r="4" fill="#666" stroke="#444" stroke-width="1"/>
+  <!-- jaw hinge -->
+  <circle cx="55" cy="130" r="5" fill="#777" stroke="#444" stroke-width="1"/>
+  <circle cx="145" cy="130" r="5" fill="#777" stroke="#444" stroke-width="1"/>
+  <!-- neck -->
+  <rect x="85" y="200" width="30" height="15" rx="3" fill="#666"/>
+  <line x1="85" y1="207" x2="115" y2="207" stroke="#555" stroke-width="1"/>
+</svg>   
