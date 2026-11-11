@@ -1,64 +1,73 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" width="160" height="160">
-  <!-- cranium top -->
-  <rect x="40" y="8" width="80" height="8" fill="#7a7a7a"/>
-  <rect x="32" y="16" width="96" height="8" fill="#8a8a8a"/>
-  <rect x="24" y="24" width="112" height="8" fill="#8a8a8a"/>
-  <rect x="24" y="32" width="112" height="8" fill="#909090"/>
-  <!-- forehead plate -->
-  <rect x="32" y="40" width="96" height="8" fill="#999"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 176" width="160" height="176">
+  <!-- cranium top (flat, wide) -->
+  <rect x="24" y="8" width="112" height="8" fill="#7a7a7a"/>
+  <rect x="20" y="16" width="120" height="8" fill="#8a8a8a"/>
+  <rect x="16" y="24" width="128" height="8" fill="#8a8a8a"/>
+  <!-- forehead (straight sides) -->
+  <rect x="16" y="32" width="128" height="8" fill="#909090"/>
+  <rect x="16" y="40" width="128" height="8" fill="#999"/>
+  <!-- eye socket row -->
+  <rect x="16" y="48" width="128" height="8" fill="#8a8a8a"/>
   <!-- eye sockets -->
-  <rect x="24" y="48" width="112" height="8" fill="#8a8a8a"/>
-  <rect x="32" y="56" width="48" height="16" fill="#111"/>
-  <rect x="80" y="56" width="48" height="16" fill="#111"/>
+  <rect x="24" y="56" width="44" height="16" fill="#111"/>
+  <rect x="92" y="56" width="44" height="16" fill="#111"/>
   <!-- eye glow -->
-  <rect x="40" y="60" width="16" height="8" fill="#ff2200"/>
-  <rect x="88" y="60" width="16" height="8" fill="#ff2200"/>
-  <rect x="44" y="60" width="4" height="4" fill="#ff6644"/>
-  <rect x="92" y="60" width="4" height="4" fill="#ff6644"/>
+  <rect x="32" y="60" width="16" height="8" fill="#ff2200"/>
+  <rect x="100" y="60" width="16" height="8" fill="#ff2200"/>
+  <rect x="36" y="60" width="4" height="4" fill="#ff6644"/>
+  <rect x="104" y="60" width="4" height="4" fill="#ff6644"/>
   <!-- nose bridge -->
   <rect x="76" y="56" width="8" height="16" fill="#6a6a6a"/>
   <!-- nose cavity -->
   <rect x="72" y="72" width="16" height="8" fill="#222"/>
-  <!-- cheekbones -->
-  <rect x="24" y="72" width="48" height="8" fill="#8a8a8a"/>
-  <rect x="88" y="72" width="48" height="8" fill="#8a8a8a"/>
-  <!-- jaw top -->
-  <rect x="24" y="80" width="112" height="8" fill="#7a7a7a"/>
+  <!-- cheekbones (wide, square) -->
+  <rect x="16" y="72" width="56" height="8" fill="#8a8a8a"/>
+  <rect x="88" y="72" width="56" height="8" fill="#8a8a8a"/>
+  <!-- jaw top (straight) -->
+  <rect x="16" y="80" width="128" height="8" fill="#7a7a7a"/>
   <!-- teeth row 1 -->
-  <rect x="32" y="88" width="96" height="8" fill="#6a6a6a"/>
-  <rect x="36" y="88" width="12" height="8" fill="#b0b0b0"/>
-  <rect x="52" y="88" width="12" height="8" fill="#b0b0b0"/>
-  <rect x="68" y="88" width="12" height="8" fill="#b0b0b0"/>
-  <rect x="84" y="88" width="12" height="8" fill="#b0b0b0"/>
-  <rect x="100" y="88" width="12" height="8" fill="#b0b0b0"/>
-  <rect x="116" y="88" width="8" height="8" fill="#b0b0b0"/>
-  <!-- teeth row 2 (lower) -->
-  <rect x="32" y="96" width="96" height="8" fill="#5a5a5a"/>
-  <rect x="40" y="96" width="12" height="8" fill="#a0a0a0"/>
-  <rect x="56" y="96" width="12" height="8" fill="#a0a0a0"/>
-  <rect x="72" y="96" width="12" height="8" fill="#a0a0a0"/>
-  <rect x="88" y="96" width="12" height="8" fill="#a0a0a0"/>
-  <rect x="104" y="96" width="12" height="8" fill="#a0a0a0"/>
-  <!-- jaw bottom -->
-  <rect x="32" y="104" width="96" height="8" fill="#7a7a7a"/>
-  <rect x="40" y="112" width="80" height="8" fill="#6a6a6a"/>
-  <rect x="48" y="120" width="64" height="8" fill="#5a5a5a"/>
-  <rect x="56" y="128" width="48" height="8" fill="#4a4a4a"/>
-  <!-- chin -->
-  <rect x="64" y="136" width="32" height="8" fill="#3a3a3a"/>
-  <!-- mechanical seams -->
-  <rect x="76" y="8" width="8" height="40" fill="#666" opacity="0.5"/>
-  <rect x="24" y="48" width="8" height="32" fill="#666" opacity="0.3"/>
-  <rect x="128" y="48" width="8" height="32" fill="#666" opacity="0.3"/>
+  <rect x="24" y="88" width="112" height="8" fill="#6a6a6a"/>
+  <rect x="28" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="44" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="60" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="76" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="92" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="108" y="88" width="12" height="8" fill="#b0b0b0"/>
+  <rect x="124" y="88" width="8" height="8" fill="#b0b0b0"/>
+  <!-- teeth row 2 -->
+  <rect x="24" y="96" width="112" height="8" fill="#5a5a5a"/>
+  <rect x="32" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <rect x="48" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <rect x="64" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <rect x="80" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <rect x="96" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <rect x="112" y="96" width="12" height="8" fill="#a0a0a0"/>
+  <!-- jaw bottom (square) -->
+  <rect x="24" y="104" width="112" height="8" fill="#7a7a7a"/>
+  <rect x="28" y="112" width="104" height="8" fill="#6a6a6a"/>
+  <rect x="32" y="120" width="96" height="8" fill="#5a5a5a"/>
+  <!-- chin (wide, flat) -->
+  <rect x="40" y="128" width="80" height="8" fill="#4a4a4a"/>
+  <rect x="48" y="136" width="64" height="8" fill="#3a3a3a"/>
+  <!-- NECK (thick, blocky) -->
+  <rect x="40" y="144" width="80" height="8" fill="#4a4a4a"/>
+  <rect x="36" y="152" width="88" height="8" fill="#3a3a3a"/>
+  <rect x="36" y="160" width="88" height="8" fill="#333"/>
+  <rect x="40" y="168" width="80" height="8" fill="#2a2a2a"/>
+  <!-- neck segment lines -->
+  <rect x="36" y="152" width="88" height="2" fill="#222"/>
+  <rect x="36" y="160" width="88" height="2" fill="#222"/>
+  <!-- mechanical seams (vertical, square) -->
+  <rect x="76" y="8" width="8" height="48" fill="#666" opacity="0.4"/>
   <!-- temple bolts -->
-  <rect x="24" y="40" width="8" height="8" fill="#555"/>
-  <rect x="128" y="40" width="8" height="8" fill="#555"/>
-  <rect x="26" y="42" width="4" height="4" fill="#888"/>
-  <rect x="130" y="42" width="4" height="4" fill="#888"/>
-  <!-- jaw hinge -->
-  <rect x="24" y="80" width="8" height="8" fill="#555"/>
-  <rect x="128" y="80" width="8" height="8" fill="#555"/>
-  <!-- neck -->
-  <rect x="64" y="144" width="32" height="8" fill="#4a4a4a"/>
-  <rect x="64" y="152" width="32" height="8" fill="#3a3a3a"/>
+  <rect x="16" y="40" width="8" height="8" fill="#555"/>
+  <rect x="136" y="40" width="8" height="8" fill="#555"/>
+  <rect x="18" y="42" width="4" height="4" fill="#888"/>
+  <rect x="138" y="42" width="4" height="4" fill="#888"/>
+  <!-- jaw hinges -->
+  <rect x="16" y="80" width="8" height="8" fill="#555"/>
+  <rect x="136" y="80" width="8" height="8" fill="#555"/>
+  <!-- side plate lines -->
+  <rect x="16" y="24" width="4" height="64" fill="#666" opacity="0.3"/>
+  <rect x="140" y="24" width="4" height="64" fill="#666" opacity="0.3"/>
 </svg>   
