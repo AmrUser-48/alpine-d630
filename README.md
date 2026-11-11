@@ -84,9 +84,11 @@ RUSTFLAGS:       -C target-cpu=core2
 
 APK release numbers are raised so the local Core 2 repository takes precedence over generic Alpine packages.
 
-Core target set: musl, BusyBox, apk-tools, OpenRC, OpenSSL, OpenSSH, Bash, binutils, sed, ripgrep, fd, fzf, Neovim, Python, Mesa, Xorg, Intel video DDX, libinput and Synaptics input drivers, networking tools, filesystem utilities, PCI/USB tools, htop, zstd and xz.
+Core target set: musl, BusyBox, apk-tools, OpenRC, OpenSSL, OpenSSH, Bash, binutils, sed, ripgrep, fd, fzf, Neovim, Python, LuaJIT, lf, bat, Mesa, Xorg, Intel video DDX, libinput and Synaptics input drivers, xterm/xrdb, ALSA, SoX, LAME, networking and filesystem tools, PCI/USB tools, htop, zstd and xz.
 
-Additional requested userland targets: `luajit`, `bat`, `dmenu`, `st` and `dwm`.
+The D630 toolchain also builds `dmenu`, `st`, and `dwm`. The Go `lf` build is pinned to `GOAMD64=v1`, safe for Merom without SSE4.1. Data-only packages such as `font-terminus`, `tzdata`, and `alsa-ucm-conf` come from the pinned Alpine repository.
+
+Audio uses the kernel's Intel HDA driver and direct ALSA. PipeWire is intentionally omitted: this DWM/CLI live image does not require a user-session audio server.
 
 Graphics constraints:
 - Mesa without LLVM.
@@ -96,6 +98,18 @@ Graphics constraints:
 - Intel DDX: SNA default; UXA fallback.
 
 DRI3 is an Xorg/Mesa capability, not a standalone APK target. The protocol definitions come from `xorgproto`; the server is built with DRI3 support.
+
+## 03A // LIVE SESSION
+
+- User: `d630` (UID/GID 1000); automatic login on tty1. TTY2–TTY6 retain normal login.
+- Groups: `audio`, `video`, `input`, `wheel`, `netdev`, `dialout`, `lp`, `cdrom`, and `users`.
+- `doas`: passwordless for `wheel` in this volatile live image.
+- Shell: Bash, Neovim editor, history, bracketed paste, lf on Ctrl+O, and the Readline-safe command timer from `deb12dots`.
+- X11: run `startx`; it starts dwm. Xterm uses Terminus through `.Xresources`. Alt+Shift switches US/Ukrainian layouts.
+- Locale/time: `uk_UA.UTF-8` via `musl-locales`, timezone `Europe/Kyiv`.
+- Console: Terminus `ter-116n.psf.gz`, loaded by OpenRC at boot. ALSA mixer state is restored/saved by OpenRC.
+
+All live changes are ephemeral unless written to persistent storage.
 
 A package is COMPLETE only when its APK is present, its metadata and signing verify, and the local repository index is regenerated. A successful compiler invocation alone is not a release.
 
