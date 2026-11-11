@@ -1,10 +1,8 @@
 # T-800 // ALPINE-D630 BUILD DIRECTIVE
+| ⠀ | ⠀ |
+|:---|---:|
+| **STATUS:** `ACTIVE`<br>**TARGET:** Dell Latitude D630<br>**ARCH:** x86_64<br>**CPU:** Intel Core 2 Duo T7250 / Merom<br>**BOOT:** Legacy BIOS only. EFI is out of scope. | <img src="assets/t800-skull.svg" width="120"> |   
 
-STATUS: ACTIVE  
-TARGET: Dell Latitude D630  
-ARCH: x86_64  
-CPU: Intel Core 2 Duo T7250 / Merom  
-BOOT: Legacy BIOS only. EFI is out of scope.
 
 ## 00 // TARGET MATRIX
 
