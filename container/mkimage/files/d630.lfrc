@@ -1,0 +1,8 @@
+set hidden true
+set ignorecase true
+set drawbox true
+set scrolloff 8
+set period 1
+set shell bash
+set shellopts '-eu'
+set editor nvim
