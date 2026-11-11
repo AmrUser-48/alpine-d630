@@ -40,7 +40,9 @@ CORE2_USERLAND_PACKAGES="
     sed
     ripgrep
     fd
+    bat
     fzf
+    luajit
     neovim
     python3
     mesa
@@ -48,6 +50,9 @@ CORE2_USERLAND_PACKAGES="
     xf86-video-intel
     xf86-input-synaptics
     xf86-input-libinput
+    dmenu
+    st
+    dwm
 "
 
 for pkg in $CORE2_USERLAND_PACKAGES; do
@@ -168,7 +173,7 @@ p = Path(sys.argv[1])
 s = p.read_text()
 if "--enable-optimizations" not in s or "--with-lto" not in s:
     raise SystemExit("Python optimization configure options not found")
-s, n = re.subn(r'(?m)^options="net"\s*$', 'options="net !check"', s, count=1)
+s, n = re.subn(r'(?m)^options="net"(?=\s*(?:#.*)?$)', 'options="net !check"', s, count=1)
 if n != 1:
     raise SystemExit(f"Python test option patch count: {n}")
 # PGO/LTO add substantial compile time and peak memory; retain -O2 and Core 2 flags.
@@ -197,12 +202,12 @@ import re, sys
 p = Path(sys.argv[1])
 s = p.read_text()
 
-# Remove build dependencies used only by LLVM, Rusticl, Vulkan, VAAPI and Wayland.
+# Remove dependencies used only by Rusticl, Vulkan, VA-API and Wayland.
+# Keep llvm-dev: it is needed only for the isolated host-side Crocus shader tools.
 for line in (
     "\tcbindgen\n",
     "\tglslang-dev\n",
     "\tlibva-dev\n",
-    "\tllvm$_llvmver-dev\n",
     "\tvulkan-loader-dev\n",
     "\twayland-dev\n",
     "\twayland-protocols\n",
@@ -217,42 +222,73 @@ pattern = re.compile(
     r'prepare\(\) \{',
     re.S,
 )
-s, count = pattern.subn("_rusticl=false\n\nprepare() {", s, count=1)
+replacement = """_rusticl=false
+makedepends=\"$makedepends clang$_llvmver-dev libclc-dev~$_llvmver spirv-llvm-translator-dev spirv-tools-dev\"
+_intel_rt=disabled
+_vulkan_drivers=\"\"
+_vulkan_layers=\"\"
+_gallium_drivers=\"crocus,softpipe\"
+subpackages=\"$pkgname-dbg $pkgname-dev $pkgname-dri-gallium:_gallium $pkgname-egl $pkgname-gl $pkgname-gles $pkgname-gbm\"
+
+prepare() {"""
+s, count = pattern.subn(replacement, s, count=1)
 if count != 1:
-    raise SystemExit(f"Could not remove Mesa Rusticl dependency block: {count}")
+    raise SystemExit(f"Could not replace Mesa Rusticl/configuration block: {count}")
 
-s = s.replace(
-    '_gallium_drivers="$_gallium_drivers,svga,i915,iris,crocus"',
-    '_gallium_drivers="crocus,softpipe"',
-)
-s = s.replace(
-    '_vulkan_drivers="$_vulkan_drivers,intel,intel_hasvk,nouveau,virtio"',
-    '_vulkan_drivers=""',
-)
-s = s.replace(
-    '_vulkan_layers="$_vulkan_layers,intel-nullhw"',
-    '_vulkan_layers=""',
-)
 if '_gallium_drivers="crocus,softpipe"' not in s:
-    raise SystemExit("Mesa Crocus driver selection did not apply")
+    raise SystemExit("Mesa Crocus/Softpipe target selection did not apply")
 
-marker = "_rusticl=false\n\nprepare() {"
-replacement = "_rusticl=false\n_intel_rt=disabled\n_vulkan_drivers=\"\"\n_vulkan_layers=\"\"\n_gallium_drivers=\"crocus,softpipe\"\nsubpackages=\"$pkgname-dbg $pkgname-dev $pkgname-dri-gallium:_gallium $pkgname-egl $pkgname-gl $pkgname-gles $pkgname-gbm\"\n\nprepare() {"
-if s.count(marker) != 1:
-    raise SystemExit("Mesa target-configuration insertion point not unique")
-s = s.replace(marker, replacement, 1)
-
-s = s.replace('PATH="$PATH:/usr/lib/llvm$_llvmver/bin" \\\n\tabuild-meson', 'abuild-meson')
-s = s.replace("-Dllvm=enabled", "-Dllvm=disabled")
-s = s.replace("-Dshared-llvm=enabled", "-Dshared-llvm=disabled")
+# Configure only the D630 target build with LLVM disabled and external host tools.
+s = s.replace("-Dllvm=enabled", "-Dllvm=disabled", 1)
+s = s.replace("-Dshared-llvm=enabled", "-Dshared-llvm=disabled", 1)
+llvm_block = "\t\t-Dllvm=disabled " + chr(92) + "\n\t\t-Dshared-llvm=disabled " + chr(92) + "\n"
+if s.count(llvm_block) != 1:
+    raise SystemExit("Mesa target LLVM option block not unique")
+s = s.replace(
+    llvm_block,
+    llvm_block
+    + "\t\t-Dmesa-clc=system " + chr(92) + "\n"
+    + "\t\t-Dprecomp-compiler=system " + chr(92) + "\n",
+    1,
+)
 s = s.replace("-Dplatforms=x11,wayland", "-Dplatforms=x11")
 s = s.replace("-Dgallium-va=enabled", "-Dgallium-va=disabled")
-s = s.replace("\t\t-Dgallium-rusticl-enable-drivers=auto,freedreno \\\n", "")
-s = s.replace("\t\t-Drust_std=2021 \\\n", "")
-if "llvm$_llvmver-dev" in s or "-Dllvm=enabled" in s:
-    raise SystemExit("Mesa still declares an LLVM build dependency or enabled LLVM option")
-if "wayland-dev" in s or "vulkan-loader-dev" in s or "clang$_llvmver-dev" in s:
+s = s.replace("\t\t-Dgallium-rusticl-enable-drivers=auto,freedreno " + chr(92) + "\n", "")
+s = s.replace("\t\t-Drust_std=2021 " + chr(92) + "\n", "")
+if s.count("-Dllvm=disabled") != 1 or "-Dmesa-clc=system" not in s or "-Dprecomp-compiler=system" not in s:
+    raise SystemExit("Mesa target must use system CLC tools and disable LLVM")
+if "wayland-dev" in s or "vulkan-loader-dev" in s or "rust-bindgen" in s:
     raise SystemExit("Mesa still contains a disabled-feature build dependency")
+
+# Build the two native tools in a separate host-only Meson tree. The host tools
+# can link LLVM; neither tool nor LLVM is copied into the target APK.
+host_tools_setup = r"""
+	# Host-only Crocus CLC tools; excluded from target package staging.
+	export PATH="$PATH:/usr/lib/llvm$_llvmver/bin"
+	meson setup "$srcdir/mesa-host-tools" "$builddir" \
+		--prefix=/usr \
+		-Dbuild-tests=false \
+		-Dgallium-drivers= \
+		-Dvulkan-drivers= \
+		-Dplatforms= \
+		-Dglx=disabled \
+		-Degl=disabled \
+		-Dgbm=disabled \
+		-Dopengl=false \
+		-Dgles1=disabled \
+		-Dgles2=disabled \
+		-Dllvm=enabled \
+		-Dshared-llvm=enabled \
+		-Dmesa-clc=enabled \
+		-Dinstall-mesa-clc=true
+	meson compile -C "$srcdir/mesa-host-tools"
+	DESTDIR="$srcdir/mesa-host-tools-root" meson install -C "$srcdir/mesa-host-tools"
+"""
+old_path = 'PATH="$PATH:/usr/lib/llvm$_llvmver/bin" ' + chr(92) + "\n\tabuild-meson"
+new_path = host_tools_setup + '\tPATH="$srcdir/mesa-host-tools-root/usr/bin:$PATH" abuild-meson'
+if s.count(old_path) != 1:
+    raise SystemExit("Mesa host-tool build insertion point not unique")
+s = s.replace(old_path, new_path, 1)
 p.write_text(s)
 PY_MESA
     elif [ "$pkg" = busybox ]; then
@@ -267,9 +303,15 @@ PY_MESA
     printf 'Prepared Core 2 APKBUILD: %s (pkgrel %s -> %s)\n' "$pkg" "$pkgrel" "$((pkgrel + 100))"
 done
 
-SIGNING_PUBKEY="$(find "$KEYS_DIR" -maxdepth 1 -type f -name '*.rsa.pub' -print -quit)"
-[ -n "$SIGNING_PUBKEY" ] || { echo "Missing APK signing public key" >&2; exit 1; }
-SIGNING_PUBKEY_NAME="${SIGNING_PUBKEY##*/}"
+# Trust every preserved and current signing key. The checkpoint APKs use the
+# original public key; new APKs are signed by the runner's newly generated key.
+set --
+for SIGNING_PUBKEY in "$KEYS_DIR"/*.rsa.pub; do
+    [ -f "$SIGNING_PUBKEY" ] || continue
+    SIGNING_PUBKEY_NAME="${SIGNING_PUBKEY##*/}"
+    set -- "$@" --volume "$SIGNING_PUBKEY:/etc/apk/keys/$SIGNING_PUBKEY_NAME:ro"
+done
+[ "$#" -gt 0 ] || { echo "Missing APK signing public keys" >&2; exit 1; }
 SOURCE_DATE_EPOCH="$(git -C "$APORTS_DIR" log -1 --format=%ct)"
 
 mkdir -p "$PACKAGES_DIR/repo/packages/$TARGET_ARCH"
@@ -280,7 +322,7 @@ docker run --rm \
     --volume "$PACKAGES_DIR:/workspace/build/packages" \
     --volume "$WORK_DIR:/workspace/build/work" \
     --volume "$KEYS_DIR:/home/builder/.abuild" \
-    --volume "$SIGNING_PUBKEY:/etc/apk/keys/$SIGNING_PUBKEY_NAME:ro" \
+    "$@" \
     --workdir /workspace/build/packages/musl \
     --env REPODEST=/workspace/build/packages/repo \
     --env SRCDEST=/workspace/build/work/distfiles \
@@ -303,8 +345,8 @@ docker run --rm \
             musl busybox apk-tools openrc chrony dhcpcd doas e2fsprogs \
             kbd openntpd openssl openssh wget iw wpa_supplicant \
             btrfs-progs dosfstools ntfs-3g htop pciutils usbutils zstd xz \
-            bash binutils sed ripgrep fd fzf neovim python3 mesa xorg-server \
-            xf86-video-intel xf86-input-synaptics xf86-input-libinput
+            bash binutils sed ripgrep fd bat fzf luajit neovim python3 mesa xorg-server \
+            xf86-video-intel xf86-input-synaptics xf86-input-libinput dmenu st dwm
         do
             cd "/workspace/build/packages/$pkg"
             pkgver=$(sed -n "s/^pkgver=//p" APKBUILD | head -n 1)
@@ -316,6 +358,7 @@ docker run --rm \
             fi
             echo "===== Core 2 target build: $pkg-$pkgver-r$pkgrel ====="
             abuild -P /workspace/build/packages/repo -s /workspace/build/work/distfiles -r
+            abuild -P /workspace/build/packages/repo index
         done
         cd /workspace/build/packages/musl
         abuild -P /workspace/build/packages/repo index
