@@ -27,6 +27,11 @@ sed
 fzf
 neovim
 python3
+bat
+luajit
+dmenu
+st
+dwm
 mesa
 mesa-dri-gallium
 mesa-egl
