@@ -9,9 +9,15 @@ ensure_build_dirs
 ensure_builder_image
 ensure_signing_key
 
-SIGNING_PUBKEY="$(find "$KEYS_DIR" -maxdepth 1 -type f -name '*.rsa.pub' -print -quit)"
-[ -n "$SIGNING_PUBKEY" ] || { echo "Missing APK signing public key" >&2; exit 1; }
-SIGNING_PUBKEY_NAME="${SIGNING_PUBKEY##*/}"
+# Preserve every public key: the checkpoint packages and newly built APKINDEX
+# may be signed by different builder keys. Never mount private keys here.
+set --
+for SIGNING_PUBKEY in "$KEYS_DIR"/*.rsa.pub; do
+    [ -f "$SIGNING_PUBKEY" ] || continue
+    SIGNING_PUBKEY_NAME="${SIGNING_PUBKEY##*/}"
+    set -- "$@" --volume "$SIGNING_PUBKEY:/etc/apk/keys/$SIGNING_PUBKEY_NAME:ro"
+done
+[ "$#" -gt 0 ] || { echo "Missing APK signing public keys" >&2; exit 1; }
 
 USERLAND_MARKER="$PACKAGES_DIR/core2-userland-built"
 [ -s "$USERLAND_MARKER" ] || {
@@ -31,7 +37,7 @@ docker run --rm \
     --volume "$PROJECT_ROOT:/workspace/src:ro" \
     --volume "$BUILD_ROOT:/workspace/build" \
     --volume "$KEYS_DIR:/home/builder/.abuild" \
-    --volume "$SIGNING_PUBKEY:/etc/apk/keys/$SIGNING_PUBKEY_NAME:ro" \
+    "$@" \
     --volume "$PROJECT_ROOT/container/mkimage:/home/builder/.mkimage:ro" \
     --workdir /workspace/build \
     "$IMAGE" \
