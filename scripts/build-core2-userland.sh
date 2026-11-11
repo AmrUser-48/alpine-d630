@@ -104,6 +104,19 @@ if old not in s:
     raise SystemExit('apk-tools source URL insertion point missing')
 p.write_text(s.replace(old, new, 1))
 PY_APKTOOLS
+    elif [ "$pkg" = musl-locales ]; then
+        # The Adelie Git host is intermittently unreachable; use the identical Alpine distfiles mirror.
+        python3 - "$target_dir/APKBUILD" <<'PY_MUSL_LOCALES'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+s = p.read_text()
+old = 'https://git.adelielinux.org/adelie/musl-locales/-/archive/$pkgver/musl-locales-$pkgver.tar.bz2'
+new = 'https://distfiles.alpinelinux.org/distfiles/v3.24/musl-locales-$pkgver.tar.bz2'
+if old not in s:
+    raise SystemExit('musl-locales source URL insertion point missing')
+p.write_text(s.replace(old, new, 1))
+PY_MUSL_LOCALES
     elif [ "$pkg" = musl ]; then
         # Alpine musl recipe strips CFLAGS during configuration; restore target flags.
         python3 - "$target_dir/APKBUILD" <<'PY_MUSL'
