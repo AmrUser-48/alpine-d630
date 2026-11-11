@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 280" width="200" height="280">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
   <defs>
     <linearGradient id="lava" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ff6600"/>
@@ -11,7 +11,7 @@
       <stop offset="100%" stop-color="#444"/>
     </linearGradient>
     <radialGradient id="glow" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#ffaa00" stop-opacity="0.6"/>
+      <stop offset="0%" stop-color="#ffaa00" stop-opacity="0.5"/>
       <stop offset="100%" stop-color="#ff3300" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="thumb" x1="0" y1="0" x2="0" y2="1">
@@ -21,70 +21,72 @@
   </defs>
 
   <!-- background -->
-  <rect x="0" y="0" width="200" height="280" fill="#1a0a00"/>
+  <rect x="0" y="0" width="200" height="300" fill="#0d0500"/>
 
   <!-- molten pool -->
-  <ellipse cx="100" cy="220" rx="95" ry="50" fill="url(#lava)"/>
-  <ellipse cx="100" cy="220" rx="95" ry="50" fill="url(#glow)"/>
+  <ellipse cx="100" cy="245" rx="95" ry="50" fill="url(#lava)"/>
+  <ellipse cx="100" cy="245" rx="95" ry="50" fill="url(#glow)"/>
 
-  <!-- lava surface ripples -->
-  <ellipse cx="70" cy="215" rx="20" ry="5" fill="#ff8833" opacity="0.5"/>
-  <ellipse cx="130" cy="225" rx="15" ry="4" fill="#ff8833" opacity="0.4"/>
-  <ellipse cx="100" cy="210" rx="12" ry="3" fill="#ffcc00" opacity="0.3"/>
+  <!-- lava ripples -->
+  <ellipse cx="70" cy="240" rx="20" ry="5" fill="#ff8833" opacity="0.5"/>
+  <ellipse cx="130" cy="250" rx="15" ry="4" fill="#ff8833" opacity="0.4"/>
+  <ellipse cx="100" cy="235" rx="12" ry="3" fill="#ffcc00" opacity="0.3"/>
 
   <!-- bubbles -->
-  <circle cx="50" cy="218" r="4" fill="#ffaa00" opacity="0.7"/>
-  <circle cx="155" cy="222" r="3" fill="#ffaa00" opacity="0.6"/>
-  <circle cx="80" cy="230" r="2.5" fill="#ffcc44" opacity="0.5"/>
-  <circle cx="125" cy="215" r="3.5" fill="#ffaa00" opacity="0.6"/>
+  <circle cx="50" cy="243" r="4" fill="#ffaa00" opacity="0.7"/>
+  <circle cx="155" cy="248" r="3" fill="#ffaa00" opacity="0.6"/>
+  <circle cx="80" cy="255" r="2.5" fill="#ffcc44" opacity="0.5"/>
+  <circle cx="125" cy="240" r="3.5" fill="#ffaa00" opacity="0.6"/>
 
-  <!-- steam/heat haze -->
-  <path d="M60 195 Q65 185 60 175" stroke="#ff6633" stroke-width="1.5" fill="none" opacity="0.4"/>
-  <path d="M140 190 Q145 180 140 170" stroke="#ff6633" stroke-width="1.5" fill="none" opacity="0.4"/>
-  <path d="M100 192 Q103 182 100 172" stroke="#ff8844" stroke-width="1" fill="none" opacity="0.3"/>
+  <!-- heat haze -->
+  <path d="M55 220 Q60 210 55 200" stroke="#ff6633" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M145 215 Q150 205 145 195" stroke="#ff6633" stroke-width="1.5" fill="none" opacity="0.4"/>
+  <path d="M100 218 Q103 208 100 198" stroke="#ff8844" stroke-width="1" fill="none" opacity="0.3"/>
 
-  <!-- arm emerging from lava -->
-  <rect x="82" y="130" width="36" height="90" rx="4" fill="url(#arm)"/>
-  <!-- arm segments -->
-  <line x1="82" y1="160" x2="118" y2="160" stroke="#333" stroke-width="2"/>
-  <line x1="82" y1="185" x2="118" y2="185" stroke="#333" stroke-width="2"/>
-  <line x1="82" y1="210" x2="118" y2="210" stroke="#333" stroke-width="2"/>
-  <!-- hydraulic lines -->
-  <line x1="86" y1="130" x2="86" y2="220" stroke="#444" stroke-width="2"/>
-  <line x1="114" y1="130" x2="114" y2="220" stroke="#444" stroke-width="2"/>
-
-  <!-- fist -->
-  <rect x="70" y="95" width="60" height="40" rx="8" fill="#777" stroke="#444" stroke-width="1.5"/>
-  <!-- knuckles -->
-  <rect x="70" y="105" width="60" height="3" fill="#555"/>
-  <rect x="70" y="120" width="60" height="3" fill="#555"/>
-  <!-- finger lines -->
-  <line x1="85" y1="95" x2="85" y2="135" stroke="#444" stroke-width="1.5"/>
-  <line x1="100" y1="95" x2="100" y2="135" stroke="#444" stroke-width="1.5"/>
-  <line x1="115" y1="95" x2="115" y2="135" stroke="#444" stroke-width="1.5"/>
-
-  <!-- thumb (pointing up) -->
-  <rect x="75" y="55" width="22" height="45" rx="11" fill="url(#thumb)" stroke="#444" stroke-width="1"/>
-  <!-- thumb nail -->
-  <rect x="79" y="55" width="14" height="10" rx="5" fill="#aaa"/>
-
-  <!-- chain on wrist -->
-  <g fill="none" stroke="#999" stroke-width="2.5">
-    <ellipse cx="80" cy="140" rx="6" ry="8"/>
-    <ellipse cx="92" cy="140" rx="6" ry="8"/>
-    <ellipse cx="104" cy="140" rx="6" ry="8"/>
-    <ellipse cx="116" cy="140" rx="6" ry="8"/>
+  <!-- CHAIN hanging from top -->
+  <g fill="none" stroke="#777" stroke-width="3">
+    <ellipse cx="100" cy="15" rx="8" ry="11"/>
+    <ellipse cx="100" cy="35" rx="8" ry="11"/>
+    <ellipse cx="100" cy="55" rx="8" ry="11"/>
+    <ellipse cx="100" cy="75" rx="8" ry="11"/>
+    <ellipse cx="100" cy="95" rx="8" ry="11"/>
   </g>
   <!-- chain highlights -->
-  <g fill="none" stroke="#ccc" stroke-width="0.8">
-    <ellipse cx="80" cy="137" rx="3" ry="4"/>
-    <ellipse cx="104" cy="137" rx="3" ry="4"/>
+  <g fill="none" stroke="#aaa" stroke-width="1">
+    <ellipse cx="100" cy="12" rx="4" ry="6"/>
+    <ellipse cx="100" cy="52" rx="4" ry="6"/>
+    <ellipse cx="100" cy="92" rx="4" ry="6"/>
   </g>
 
-  <!-- lava dripping off arm -->
-  <ellipse cx="82" cy="200" rx="4" ry="6" fill="#ff4400" opacity="0.8"/>
-  <ellipse cx="118" cy="195" rx="3" ry="5" fill="#ff5500" opacity="0.7"/>
+  <!-- arm emerging from chain -->
+  <rect x="82" y="105" width="36" height="85" rx="4" fill="url(#arm)"/>
+  <!-- arm segments -->
+  <line x1="82" y1="130" x2="118" y2="130" stroke="#333" stroke-width="2"/>
+  <line x1="82" y1="155" x2="118" y2="155" stroke="#333" stroke-width="2"/>
+  <line x1="82" y1="175" x2="118" y2="175" stroke="#333" stroke-width="2"/>
+  <!-- hydraulic lines -->
+  <line x1="86" y1="105" x2="86" y2="190" stroke="#444" stroke-width="2"/>
+  <line x1="114" y1="105" x2="114" y2="190" stroke="#444" stroke-width="2"/>
 
-  <!-- glow around arm -->
-  <ellipse cx="100" cy="210" rx="40" ry="15" fill="#ff4400" opacity="0.15"/>
+  <!-- fist -->
+  <rect x="70" y="190" width="60" height="40" rx="8" fill="#777" stroke="#444" stroke-width="1.5"/>
+  <!-- knuckles -->
+  <rect x="70" y="200" width="60" height="3" fill="#555"/>
+  <rect x="70" y="215" width="60" height="3" fill="#555"/>
+  <!-- finger lines -->
+  <line x1="85" y1="190" x2="85" y2="230" stroke="#444" stroke-width="1.5"/>
+  <line x1="100" y1="190" x2="100" y2="230" stroke="#444" stroke-width="1.5"/>
+  <line x1="115" y1="190" x2="115" y2="230" stroke="#444" stroke-width="1.5"/>
+
+  <!-- thumb pointing up -->
+  <rect x="75" y="150" width="22" height="45" rx="11" fill="url(#thumb)" stroke="#444" stroke-width="1"/>
+  <!-- thumb nail -->
+  <rect x="79" y="150" width="14" height="10" rx="5" fill="#aaa"/>
+
+  <!-- lava dripping off arm -->
+  <ellipse cx="82" cy="185" rx="4" ry="6" fill="#ff4400" opacity="0.8"/>
+  <ellipse cx="118" cy="180" rx="3" ry="5" fill="#ff5500" opacity="0.7"/>
+
+  <!-- glow at lava line -->
+  <ellipse cx="100" cy="235" rx="45" ry="12" fill="#ff4400" opacity="0.2"/>
 </svg>   
