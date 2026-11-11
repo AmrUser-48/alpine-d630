@@ -1,0 +1,3 @@
+# Terminus 8x16: readable Cyrillic/Latin console bitmap.
+consolefont="ter-116n.psf.gz"
+rc_tty_number=6
