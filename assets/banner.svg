@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 320" width="800" height="320">
+  <defs>
+    <pattern id="scanlines" width="4" height="4" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="800" y2="0" stroke="#000000" stroke-width="2" opacity="0.35" />
+    </pattern>
+    <pattern id="grid" width="25" height="25" patternUnits="userSpaceOnUse">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#ff9d00" stroke-width="0.5" opacity="0.12" />
+    </pattern>
+  </defs>
+
+  <!-- Sepia/Amber CRT Background -->
+  <rect width="800" height="320" fill="#120900" />
+  <rect width="800" height="320" fill="url(#grid)" />
+
+  <!-- HUD Outer Frame & Corner Brackets -->
+  <rect x="12" y="12" width="776" height="296" fill="none" stroke="#ff9d00" stroke-width="1" opacity="0.4" />
+  <path d="M 12 42 L 12 12 L 42 12" fill="none" stroke="#ffb833" stroke-width="3" />
+  <path d="M 788 42 L 788 12 L 758 12" fill="none" stroke="#ffb833" stroke-width="3" />
+  <path d="M 12 278 L 12 308 L 42 308" fill="none" stroke="#ffb833" stroke-width="3" />
+  <path d="M 788 278 L 788 308 L 758 308" fill="none" stroke="#ffb833" stroke-width="3" />
+
+  <!-- Top Telemetry Header -->
+  <text x="32" y="42" fill="#ffb833" font-family="monospace" font-size="13" font-weight="bold" letter-spacing="2">CYBERDYNE SYSTEMS // MODEL 101 HUD</text>
+  <text x="615" y="42" fill="#cc7a00" font-family="monospace" font-size="12">OPTICAL_MODE: SEPIA</text>
+  <line x1="32" y1="54" x2="768" y2="54" stroke="#ff9d00" stroke-width="1" opacity="0.6" />
+
+  <!-- Reticle Graphic (Right Side) -->
+  <g transform="translate(680, 155)" opacity="0.75">
+    <circle cx="0" cy="0" r="48" fill="none" stroke="#ff9d00" stroke-width="1" stroke-dasharray="6 4" />
+    <circle cx="0" cy="0" r="28" fill="none" stroke="#ffb833" stroke-width="1.5" />
+    <circle cx="0" cy="0" r="4" fill="#ff5500" />
+    <line x1="-60" y1="0" x2="-15" y2="0" stroke="#ff9d00" stroke-width="1" />
+    <line x1="15" y1="0" x2="60" y2="0" stroke="#ff9d00" stroke-width="1" />
+    <line x1="0" y1="-60" x2="0" y2="-15" stroke="#ff9d00" stroke-width="1" />
+    <line x1="0" y1="15" x2="0" y2="60" stroke="#ff9d00" stroke-width="1" />
+    <text x="-38" y="68" fill="#cc7a00" font-family="monospace" font-size="10">LOCK: ACQUIRED</text>
+  </g>
+
+  <!-- Target Data Readout -->
+  <g font-family="monospace" font-size="15">
+    <text x="35" y="95" fill="#cc7a00">TARGET :</text>
+    <text x="125" y="95" fill="#ffcc66" font-weight="bold">Dell Latitude D630</text>
+
+    <text x="35" y="130" fill="#cc7a00">ARCH   :</text>
+    <text x="125" y="130" fill="#ffcc66" font-weight="bold">x86_64</text>
+
+    <text x="35" y="165" fill="#cc7a00">CPU    :</text>
+    <text x="125" y="165" fill="#ffcc66" font-weight="bold">Intel Core 2 Duo T7250 / Merom</text>
+
+    <text x="35" y="200" fill="#cc7a00">BOOT   :</text>
+    <text x="125" y="200" fill="#ffcc66" font-weight="bold">Legacy BIOS only.</text>
+    <text x="125" y="222" fill="#ff5500" font-weight="bold">[EFI IS OUT OF SCOPE]</text>
+  </g>
+
+  <!-- Bottom Status Bar -->
+  <rect x="32" y="255" width="736" height="32" fill="#241200" stroke="#ff9d00" stroke-width="1" />
+  <text x="46" y="276" fill="#ffb833" font-family="monospace" font-size="13" font-weight="bold">> DIRECTIVE: EXECUTING LEGACY MBR BOOT SEQUENCE...</text>
+  <rect x="742" y="264" width="10" height="15" fill="#ffb833">
+    <animate attributeName="opacity" values="1;0;1" dur="0.9s" repeatCount="indefinite" />
+  </rect>
+
+  <!-- Scanline Overlay -->
+  <rect width="800" height="320" fill="url(#scanlines)" />
+</svg>
