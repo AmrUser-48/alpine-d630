@@ -151,4 +151,6 @@ Retain a known-good boot entry until every critical test passes.
 5. Keep generated output and private keys outside Git.
 6. Verify APKs, repository index, ISO and BIOS boot independently.
 
+<img src=assets/t800-skull.svg >
+
 T-800 DIRECTIVE: EXECUTE. VERIFY. REPORT FACTS.
