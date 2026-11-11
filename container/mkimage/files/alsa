@@ -1,0 +1,2 @@
+RESTORE_ON_START="yes"
+SAVE_ON_STOP="yes"
