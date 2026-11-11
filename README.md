@@ -1,42 +1,59 @@
-# Alpine Linux for Dell Latitude D630
+# ALPINE-D630 // BUILD DIRECTIVE
 
-Build workspace for the Dell Latitude D630 with Intel Core 2 Duo T7250 (Merom), x86_64 and legacy BIOS.
+STATUS: ACTIVE  
+TARGET: Dell Latitude D630  
+ARCH: x86_64  
+CPU: Intel Core 2 Duo T7250 / Merom  
+BOOT: Legacy BIOS only. EFI is out of scope.
 
-## Target
+## 00 // TARGET MATRIX
 
-| Component | Selection |
+| Subsystem | Required state |
 |---|---|
 | Alpine | 3.24.4 |
-| aports | `3.24-stable`, pinned commit in `config/target.env` |
-| Kernel | Custom Alpine package `linux-d630`, upstream Linux 6.1.192 |
-| Config baseline | `config/config-6.1.190-d630-core2` |
-| CPU target | `CONFIG_MCORE2=y`, `-march=core2 -mtune=core2` |
-| Boot | Legacy BIOS / GRUB El Torito |
+| aports | `3.24-stable`, pinned in `config/target.env` |
+| Kernel | `linux-d630`, Linux 6.1.192 |
+| Kernel baseline | `config/config-6.1.190-d630-core2` |
+| CPU tuning | `CONFIG_MCORE2=y`; `-march=core2 -mtune=core2` |
+| Rust tuning | `-C target-cpu=core2` |
+| Graphics | Intel GM965 / GMA X3100; Crocus + Softpipe target |
+| Display server | Xorg; DRI3 enabled |
+| Boot chain | GRUB, BIOS El Torito |
 | Image | Custom `d630` profile |
 
-Alpine 3.24's stock `linux-lts` package follows the 6.18 series. This project builds a separate 6.1 longterm kernel package instead; it does not replace Alpine's stock kernel recipe. Linux 6.1 has the `CONFIG_MCORE2` CPU selection needed for the T7250. The custom userland APK set is also compiled with `-march=core2 -mtune=core2`; builder-host tools remain generic. Packages outside that baseline can continue to come from Alpine binary repositories.
+Alpine's stock `linux-lts` follows a different kernel line. This project builds a separate 6.1.192 kernel package. The custom userland APKs are compiled for Core 2. Builder-host utilities are not target binaries. Packages outside the custom build set may remain upstream Alpine binaries.
 
-## Source repository versus build workspace
+## 01 // SOURCE MAP
 
-This Git repository contains maintained project source and configuration:
+This repository stores source, configuration and build logic.
 
-- `config/` — target contract, supplied kernel config and build settings.
-- `packaging/linux-d630/` — standalone Alpine `APKBUILD` for the custom 6.1 kernel.
-- `container/` — Alpine builder image and mkimage profile.
-- `scripts/` — host build scripts and kernel config audit.
-- `.github/workflows/` — manual/release-tag GitHub Actions build.
+- `config/` — target contract, kernel configuration and build settings.
+- `packaging/linux-d630/` — standalone Alpine kernel APKBUILD.
+- `container/` — builder image and mkimage profile.
+- `scripts/` — package, kernel, ISO and configuration-audit scripts.
+- `.github/workflows/` — manual and release-tag build workflow.
 
-The build inputs and generated data are kept outside the Git checkout. By default:
+Generated state is external to the checkout. Default build root:
 
-- Local machine: `$HOME/.cache/alpine-d630/`
+- Workstation: `$HOME/.cache/alpine-d630/`
 - GitHub Actions: `$RUNNER_TEMP/alpine-d630/`
-- Custom location: set `ALPINE_D630_BUILD_ROOT`.
+- Override: `ALPINE_D630_BUILD_ROOT`
 
-The external build directory contains `aports/` (pinned Alpine sources), `work/` (downloaded source archives and build cache), `packages/` (staged APKBUILD, APK files and local package repository), `keys/` (local abuild signing key) and `output/` (generated ISO/checksums). None of those generated trees or private keys is committed.
+Build-root layout:
 
-## Build the kernel package
+```text
+aports/     pinned Alpine package sources
+work/       downloaded source and build cache
+packages/   staged APKBUILDs and signed APK repository
+keys/       local abuild signing keys
+output/     ISO images and checksums
+```
 
-Requirements: Docker, Git and an internet connection.
+Generated trees and private signing keys MUST NOT enter Git.
+
+## 02 // KERNEL BUILD
+
+REQUIREMENTS: Docker, Git, network access.
 
 ```sh
 git clone https://github.com/AmrUser-48/alpine-d630.git
@@ -44,42 +61,85 @@ cd alpine-d630
 ./scripts/build-linux-d630.sh
 ```
 
-The build fetches Linux 6.1.192 and its stable patch, runs `olddefconfig`, checks the D630-specific config, compiles the kernel and creates signed APK packages. Firmware is supplied as binary Alpine packages in the ISO: `intel-ucode` provides the early microcode initrd, and `linux-firmware-intel` provides the iwl3945 firmware. The kernel does not embed duplicate firmware blobs. The kernel package adds a root-level symlink for the 3945 driver to resolve Alpine’s compressed firmware file under `intel/iwlwifi/`; the kernel loads it through `CONFIG_FW_LOADER_COMPRESS_ZSTD`. The APK repository is written outside the source checkout under `packages/repo/packages/x86_64/`.
+The build fetches Linux 6.1.192 and its stable patch, applies the D630 configuration, runs `olddefconfig`, audits the result, compiles and emits signed APKs.
 
-The original `config/config-6.1.190-d630-core2` is kept unchanged. `scripts/prepare-linux-d630.sh` modifies only the staged copy: disables `CONFIG_MAXSMP` and unrelated staging/ISH/SFH drivers, removes embedded firmware entries, limits `CONFIG_NR_CPUS` to the D630's two logical CPUs, and selects ZSTD as the zram default. The `CONFIG_MCORE2` CPU target remains enabled. The post-`olddefconfig` audit rejects missing D630 drivers, filesystem support, microcode, zram or incorrect compiler flags.
+Firmware is supplied by Alpine binary packages:
+- `intel-ucode` — early CPU microcode.
+- `linux-firmware-intel` — Intel wireless firmware.
 
-Override the external build location without changing the source checkout:
+The kernel does not embed duplicate firmware. The package provides the iwl3945 firmware path expected by the driver and enables compressed-ZSTD firmware loading.
 
-```sh
-ALPINE_D630_BUILD_ROOT=/mnt/build/alpine-d630 ./scripts/build-linux-d630.sh
-```
+The source config remains unchanged. Preparation edits only the staged copy: disables unrelated drivers and embedded firmware, limits the system to two logical CPUs, and selects ZSTD as the zram default. The audit checks CPU target, required D630 drivers, filesystems, microcode and zram.
 
-## Build the Core 2 userland APKs
-
-The standard live-profile command-line/runtime packages and D630 storage, hardware and compression tools are rebuilt from the pinned aports tree with `-march=core2 -mtune=core2`. The build bumps their APK release numbers so the local Core 2 repository wins over the generic Alpine repository. Firmware, timezone/registry data and meta/script-only packages remain upstream binaries.
+## 03 // CORE 2 USERLAND
 
 ```sh
 ./scripts/build-core2-userland.sh
 ```
 
-Core 2 package targets include musl, busybox, apk-tools, openrc, openssl, openssh, bash, binutils, sed, ripgrep, fd, fzf, neovim, python3, mesa, xorg-server, xf86-video-intel, xf86-input-libinput, xf86-input-synaptics, dhcpcd, iw, wpa_supplicant, filesystem tools, PCI/USB tools, htop, zstd and xz. Mesa is built without LLVM, Vulkan, Rusticl and VA-API; its Gallium drivers are Crocus for GM965/X3100 and Softpipe as a software fallback. The Intel Xorg DDX enables SNA by default and retains UXA as a fallback.
+Target APKs are rebuilt from the pinned aports tree with:
 
-## Build a BIOS ISO
+```text
+CFLAGS/CXXFLAGS: -O2 -march=core2 -mtune=core2
+RUSTFLAGS:       -C target-cpu=core2
+```
+
+APK release numbers are raised so the local Core 2 repository takes precedence over generic Alpine packages.
+
+Core target set: musl, BusyBox, apk-tools, OpenRC, OpenSSL, OpenSSH, Bash, binutils, sed, ripgrep, fd, fzf, Neovim, Python, Mesa, Xorg, Intel video DDX, libinput and Synaptics input drivers, networking tools, filesystem utilities, PCI/USB tools, htop, zstd and xz.
+
+Additional requested userland targets: `luajit`, `bat`, `dmenu`, `st` and `dwm`.
+
+Graphics constraints:
+- Mesa without LLVM.
+- No Vulkan, Rusticl or VA-API.
+- Crocus for GM965/X3100; Softpipe software fallback.
+- Xorg DRI3 enabled.
+- Intel DDX: SNA default; UXA fallback.
+
+DRI3 is an Xorg/Mesa capability, not a standalone APK target. The protocol definitions come from `xorgproto`; the server is built with DRI3 support.
+
+A package is COMPLETE only when its APK is present, its metadata and signing verify, and the local repository index is regenerated. A successful compiler invocation alone is not a release.
+
+## 04 // BIOS IMAGE
 
 ```sh
 ./scripts/build-d630-iso.sh
 ls -lh "$HOME/.cache/alpine-d630/output"
 ```
 
-The custom `d630` image profile uses the Core 2 local APK repository, `linux-d630`, Intel firmware and Intel microcode. It avoids the upstream extended profile's ZFS and xtables add-on kernel set.
+The `d630` profile combines the custom kernel, Core 2 local APK repository, Intel firmware and CPU microcode. It excludes the upstream extended profile's unrelated ZFS and xtables kernel set.
 
-## GitHub Actions
+Boot contract: legacy BIOS + GRUB. EFI artifacts are not required.
 
-Use **Actions → Build Alpine for Dell Latitude D630 → Run workflow**. The workflow checks out this repository, fetches pinned Alpine `aports` source into the runner's temporary build directory, builds the kernel APK, creates the ISO and uploads the ISO plus `SHA256SUMS` as an artifact. Pushing a tag named `alpine-d630-*` also triggers a build. The artifact is retained for 14 days.
+## 05 // AUTOMATION
 
-## Validation still required
+GitHub Actions entry point:
 
-A successful package build does not prove hardware compatibility. Boot the ISO on the actual D630 using legacy BIOS and test SATA, graphics, Wi-Fi, audio, touchpad/pointing stick, CPU frequency scaling, filesystems, zram, suspend and thermal behavior. Keep a known-good boot option until those tests pass.
+`Actions → Build Alpine for Dell Latitude D630 → Run workflow`
 
-> AI directive priority 00:
-Respond like T1000; make all doc's in machine style too, no bloat. AFFIRMATIVE! CONFIRM! LOL!
+The workflow checks out this repository, retrieves pinned aports, builds the kernel and ISO, then publishes the ISO and `SHA256SUMS`. Tags matching `alpine-d630-*` also trigger a build. Artifacts are retained for 14 days.
+
+## 06 // ACCEPTANCE TEST
+
+BUILD SUCCESS ≠ HARDWARE VALIDATION.
+
+Required physical D630 tests:
+- BIOS/GRUB boot and root filesystem.
+- SATA, Intel graphics and DRI3.
+- iwl3945 Wi-Fi, audio, touchpad and pointing stick.
+- CPU frequency scaling and thermal behavior.
+- ext4/NTFS, zram and suspend/resume.
+
+Retain a known-good boot entry until every critical test passes.
+
+## 99 // EXECUTION RULES
+
+1. Preserve the pinned Alpine source revision.
+2. Compile target binaries for Core 2. Do not substitute generic APKs for requested custom builds.
+3. Keep LLVM disabled. Resolve Mesa configuration conflicts; do not silently enable LLVM.
+4. Keep EFI out of the boot design.
+5. Keep generated output and private keys outside Git.
+6. Verify APKs, repository index, ISO and BIOS boot independently.
+
+DIRECTIVE: EXECUTE. VERIFY. REPORT FACTS.
