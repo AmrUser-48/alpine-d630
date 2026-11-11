@@ -20,49 +20,62 @@ require() {
     }
 }
 
-require '# CONFIG_X86_NATIVE_CPU is not set'
+require_enabled() {
+    grep -Eq "^CONFIG_$1=(y|m)$" "$CONFIG_FILE" || {
+        echo "Required kernel option disabled after olddefconfig: CONFIG_$1" >&2
+        exit 1
+    }
+}
+
+# Linux 6.1 uses the MCORE2 Kconfig choice; this is the actual target CPU.
+require 'CONFIG_MCORE2=y'
+require '# CONFIG_GENERIC_CPU is not set'
+require 'CONFIG_NR_CPUS=2'
 require 'CONFIG_MICROCODE=y'
-require 'CONFIG_CPU_FREQ=y'
-require 'CONFIG_CPU_FREQ_GOV_USERSPACE=y'
-require 'CONFIG_X86_ACPI_CPUFREQ=m'
-require 'CONFIG_X86_MSR=m'
-require 'CONFIG_X86_CPUID=m'
-require 'CONFIG_DRM_I915=m'
-require 'CONFIG_AGP_INTEL=m'
-require 'CONFIG_SATA_AHCI=m'
-require 'CONFIG_ATA_PIIX=m'
-require 'CONFIG_USB_STORAGE=m'
-require 'CONFIG_IWL3945=m'
-require 'CONFIG_SND_HDA_INTEL=m'
-require 'CONFIG_SND_HDA_CODEC_SIGMATEL=m'
-require 'CONFIG_MOUSE_PS2=m'
-require 'CONFIG_INPUT_MOUSEDEV=m'
-require 'CONFIG_AUTOFS_FS=y'
-require 'CONFIG_EXT4_FS=m'
-require 'CONFIG_BTRFS_FS=m'
-require 'CONFIG_NTFS3_FS=m'
+require 'CONFIG_MICROCODE_INTEL=y'
+require '# CONFIG_STAGING is not set'
+require '# CONFIG_INTEL_ISH_HID is not set'
+require '# CONFIG_AMD_SFH_HID is not set'
+require 'CONFIG_FW_LOADER_COMPRESS_ZSTD=y'
+if grep -Eq '^CONFIG_EXTRA_FIRMWARE="[^"]+' "$CONFIG_FILE"; then
+    echo "Unexpected firmware embedded in the kernel; use ISO firmware packages instead." >&2
+    exit 1
+fi
+require_enabled MODULES
+require_enabled CPU_FREQ
+require_enabled CPU_FREQ_GOV_USERSPACE
+require_enabled X86_ACPI_CPUFREQ
+require_enabled X86_MSR
+require_enabled X86_CPUID
+require_enabled DRM_I915
+require_enabled AGP_INTEL
+require_enabled SATA_AHCI
+require_enabled ATA_PIIX
+require_enabled USB_STORAGE
+require_enabled IWL3945
+require_enabled SND_HDA_INTEL
+require_enabled SND_HDA_CODEC_SIGMATEL
+require_enabled MOUSE_PS2
+require_enabled INPUT_MOUSEDEV
+require_enabled AUTOFS_FS
+require_enabled EXT4_FS
+require_enabled BTRFS_FS
+require_enabled NTFS3_FS
 require 'CONFIG_NTFS3_LZX_XPRESS=y'
 require 'CONFIG_NTFS3_FS_POSIX_ACL=y'
-require 'CONFIG_FAT_FS=y'
-require 'CONFIG_MSDOS_FS=y'
-require 'CONFIG_VFAT_FS=m'
-require 'CONFIG_EXFAT_FS=m'
-require 'CONFIG_ISO9660_FS=m'
-require 'CONFIG_SQUASHFS=m'
-require 'CONFIG_FUSE_FS=m'
-require 'CONFIG_CUSE=m'
-require 'CONFIG_OVERLAY_FS=m'
+require_enabled FAT_FS
+require_enabled MSDOS_FS
+require_enabled VFAT_FS
+require_enabled EXFAT_FS
+require_enabled ISO9660_FS
+require_enabled SQUASHFS
+require_enabled FUSE_FS
+require_enabled CUSE
+require_enabled OVERLAY_FS
 require 'CONFIG_NLS_UTF8=y'
 require 'CONFIG_NLS_CODEPAGE_437=y'
-require 'CONFIG_FW_LOADER_COMPRESS_ZSTD=y'
 require 'CONFIG_ZRAM=y'
-require 'CONFIG_ZRAM_BACKEND_LZ4=y'
-require 'CONFIG_ZRAM_BACKEND_LZ4HC=y'
-require 'CONFIG_ZRAM_BACKEND_ZSTD=y'
-require 'CONFIG_ZRAM_BACKEND_DEFLATE=y'
-require 'CONFIG_ZRAM_BACKEND_842=y'
-require 'CONFIG_ZRAM_BACKEND_LZO=y'
 require 'CONFIG_ZRAM_DEF_COMP_ZSTD=y'
 
-echo "D630 kernel config audit passed."
-echo "KCFLAGS=$KCFLAGS_VALUE"
+printf '%s\n' 'D630 Linux 6.1 kernel config audit passed.'
+printf 'KCFLAGS=%s\n' "$KCFLAGS_VALUE"

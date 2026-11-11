@@ -19,10 +19,10 @@ mkdir -p /home/builder/.abuild "$BUILD/output" "$BUILD/work/mkimage-d630-cache"
 
 APKINDEX="$BUILD/packages/repo/packages/x86_64/APKINDEX.tar.gz"
 [ -f "$APKINDEX" ] || {
-    echo "No local APKINDEX found: $APKINDEX" >&2
+    echo "No local APK index found: $APKINDEX" >&2
     exit 1
 }
-LOCAL_REPO="$(dirname "$APKINDEX")"
+LOCAL_REPO="$BUILD/packages/repo/packages"
 
 export PACKAGER="D630 Alpine Builder <builder@localhost>"
 export PACKAGER_PUBKEY="$PACKAGER_PRIVKEY.pub"

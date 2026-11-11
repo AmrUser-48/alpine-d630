@@ -1,0 +1,128 @@
+# Alpine APKBUILD for the Dell Latitude D630 / Core 2 Duo T7250.
+maintainer="AmrUser-48 <66784815+AmrUser-48@users.noreply.github.com>"
+_flavor=d630
+pkgname=linux-$_flavor
+pkgver=6.1.192
+pkgrel=0
+_kernver=${pkgver%.*}
+pkgdesc="Linux kernel for Dell Latitude D630 (Core 2 Duo T7250)"
+url="https://www.kernel.org"
+arch="x86_64"
+license="GPL-2.0-only"
+depends="initramfs-generator linux-firmware-intel"
+_depends_dev="perl gmp-dev mpc1-dev mpfr-dev elfutils-dev bash flex bison zstd"
+makedepends="$_depends_dev sed installkernel bc linux-headers openssl-dev>3 mawk diffutils findutils zstd pahole python3"
+options="!strip !check"
+source="https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/linux-$_kernver.tar.xz
+	https://cdn.kernel.org/pub/linux/kernel/v${pkgver%%.*}.x/patch-$pkgver.xz
+	d630.x86_64.config
+"
+builddir="$srcdir/linux-$_kernver"
+subpackages="$pkgname-dev:_dev:$CBUILD_ARCH"
+
+prepare() {
+	if [ "$_kernver" != "$pkgver" ]; then
+		msg "Applying patch-$pkgver.xz"
+		unxz -c < "$srcdir/patch-$pkgver.xz" | patch -p1 -N
+	fi
+	default_prepare
+	rm -f localversion*
+}
+
+_kernelarch() {
+	case "$1" in
+		x86|x86_64) echo x86 ;;
+		*) echo "$1" ;;
+	esac
+}
+
+_prepareconfig() {
+	local _builddir="$srcdir/build-$_flavor.$CARCH"
+	mkdir -p "$_builddir"
+	echo "-$pkgrel-$_flavor" > "$_builddir/localversion-alpine"
+	cp "$srcdir/d630.$CARCH.config" "$_builddir/.config"
+	make -C "$builddir" O="$_builddir" ARCH="$(_kernelarch "$CARCH")" olddefconfig
+	/workspace/src/scripts/audit-d630-config.sh "$_builddir/.config" "${KCFLAGS:-}"
+}
+
+build() {
+	unset LDFLAGS CFLAGS CPPFLAGS CXXFLAGS
+	if [ -n "${SOURCE_DATE_EPOCH:-}" ]; then
+		export KBUILD_BUILD_TIMESTAMP="$(date -u -d "@$SOURCE_DATE_EPOCH" '+%Y-%m-%d %H:%M:%S')"
+	else
+		export KBUILD_BUILD_TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M:%S')"
+	fi
+	_prepareconfig
+	cd "$srcdir/build-$_flavor.$CARCH"
+	mkdir -p certs
+	sed -e 's/#O = Unspecified company/O = alpine-d630/' \
+		"$builddir/certs/default_x509.genkey" > certs/x509.genkey
+	make ARCH="$(_kernelarch "$CARCH")" \
+		CC="${CC:-gcc}" \
+		AWK="${AWK:-mawk}" \
+		KBUILD_BUILD_VERSION="$((pkgrel + 1))-Alpine-D630"
+}
+
+_package() {
+	local _outdir="$1"
+	local _builddir="$srcdir/build-$_flavor.$CARCH"
+	local _abi_release="$(make -s -C "$_builddir" ARCH="$(_kernelarch "$CARCH")" kernelrelease)"
+	cp "$_builddir/Module.symvers" "$_builddir/Module.symvers.backup"
+	mkdir -p "$_outdir/boot" "$_outdir/lib/modules"
+	make -C "$_builddir" ARCH="$(_kernelarch "$CARCH")" modules_install install \
+		INSTALL_MOD_PATH="$_outdir" \
+		INSTALL_MOD_STRIP=1 \
+		INSTALL_PATH="$_outdir/boot"
+	cp "$_builddir/Module.symvers.backup" "$_builddir/Module.symvers"
+	rm -f "$_outdir/lib/modules/$_abi_release/build" \
+		"$_outdir/lib/modules/$_abi_release/source"
+	install -D -m644 "$_builddir/include/config/kernel.release" \
+		"$_outdir/usr/share/kernel/$_flavor/kernel.release"
+}
+
+package() {
+	_package "$pkgdir"
+}
+
+_dev() {
+	local _builddir="$srcdir/build-$_flavor.$CARCH"
+	local _abi_release="$(make -s -C "$_builddir" ARCH="$(_kernelarch "$CARCH")" kernelrelease)"
+	local dir="$subpkgdir/usr/src/linux-headers-$_abi_release"
+	pkgdesc="Headers and scripts for third-party modules for the D630 kernel"
+	depends="$_depends_dev"
+	if [ -n "${SOURCE_DATE_EPOCH:-}" ]; then
+		export KBUILD_BUILD_TIMESTAMP="$(date -u -d "@$SOURCE_DATE_EPOCH" '+%Y-%m-%d %H:%M:%S')"
+	else
+		export KBUILD_BUILD_TIMESTAMP="$(date -u '+%Y-%m-%d %H:%M:%S')"
+	fi
+	mkdir -p "$dir"
+	cp -a "$_builddir/.config" "$_builddir/localversion-alpine" "$dir/"
+	install -D -t "$dir/certs" "$_builddir/certs/signing_key.x509" || :
+	make -C "$builddir" O="$dir" ARCH="$(_kernelarch "$CARCH")" \
+		AWK="${AWK:-mawk}" prepare modules_prepare scripts
+	rm -f "$dir/Makefile" "$dir/source"
+	cd "$builddir"
+	find . -path './include/*' -prune -o -path './scripts/*' -prune -o \
+		-type f \( -name 'Makefile*' -o -name 'Kconfig*' -o -name 'Kbuild*' \
+		-o -name '*.sh' -o -name '*.pl' -o -name '*.lds' -o -name 'Platform' \) \
+		-print | cpio -pdm "$dir"
+	cp -a scripts include "$dir"
+	find "arch/$(_kernelarch "$CARCH")" -name include -type d -print | while IFS= read -r folder; do
+		find "$folder" -type f
+	done | sort -u | cpio -pdm "$dir"
+	install -Dm644 "$_builddir/Module.symvers" "$dir/Module.symvers"
+	rm -rf "$dir/Documentation"
+	find "$dir" -type f -name '*.o' -delete
+	for archdir in "$dir"/arch/*; do
+		[ "${archdir##*/}" = x86 ] || rm -rf "$archdir"
+	done
+	mkdir -p "$subpkgdir/lib/modules/$_abi_release"
+	ln -sf "/usr/src/linux-headers-$_abi_release" \
+		"$subpkgdir/lib/modules/$_abi_release/build"
+}
+
+sha512sums="
+6ed2a73c2699d0810e54753715635736fc370288ad5ce95c594f2379959b0e418665cd71bc512a0273fe226fe90074d8b10d14c209080a6466498417a4fdda68  linux-6.1.tar.xz
+8b72d3b2750602674e9fb60a6cbc603710c7f7d2ba980efa65074dc2abb616bfcb75c9690554ed4edae7b5db041147575dd684d711ad9fe547a375cd35f56f61  patch-6.1.192.xz
+b8d998bf1d8acd76285d6a63a5760717f6a0ead65d6620ee88b97a14c7d3b181b5c3681dbdd5ac8ea9e52acb38e30dc6210f688dcd8ba5fe47acf5fbcf8bc681  d630.x86_64.config
+"

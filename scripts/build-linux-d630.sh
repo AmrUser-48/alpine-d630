@@ -10,7 +10,12 @@ ensure_build_dirs
 ensure_builder_image
 ensure_signing_key
 
+SIGNING_PUBKEY="$(find "$KEYS_DIR" -maxdepth 1 -type f -name '*.rsa.pub' -print -quit)"
+[ -n "$SIGNING_PUBKEY" ] || { echo "Missing APK signing public key" >&2; exit 1; }
+SIGNING_PUBKEY_NAME="${SIGNING_PUBKEY##*/}"
+
 docker run --rm \
+    --volume "$SIGNING_PUBKEY:/etc/apk/keys/$SIGNING_PUBKEY_NAME:ro" \
     --volume "$PROJECT_ROOT:/workspace/src:ro" \
     --volume "$BUILD_ROOT:/workspace/build" \
     --volume "$KEYS_DIR:/home/builder/.abuild" \

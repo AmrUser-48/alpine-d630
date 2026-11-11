@@ -37,6 +37,9 @@ jobs:
       - name: Build D630 kernel package
         run: ./scripts/build-linux-d630.sh
 
+      - name: Build Core 2 optimized Alpine userland APKs
+        run: ./scripts/build-core2-userland.sh
+
       - name: Build legacy-BIOS ISO
         run: ./scripts/build-d630-iso.sh
 
