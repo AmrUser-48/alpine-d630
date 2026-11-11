@@ -18,16 +18,16 @@ bind 'set enable-bracketed-paste on'
 # Compact prompt; keep Readline's nonprinting ANSI sequences bracketed.
 case "$TERM" in
     xterm*|rxvt*|*-256color)
-        PS1='\[\e]0;\u@\h: \w\a\\]\[\e[01;32m\\]\u@\h\[\e[00m\\]:\[\e[01;34m\\]\w\[\e[00m\\]\$ '
+        PS1='\[\e]0;\u@\h: \w\a\]\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
         ;;
     *)
-        PS1='\[\e[01;32m\\]\u@\h\[\e[00m\\]:\[\e[01;34m\\]\w\[\e[00m\\]\$ '
+        PS1='\[\e[01;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
         ;;
 esac
 
 # Show when lf starts a subshell.
 if [[ -n ${LF_LEVEL-} ]]; then
-    PS1='\[\e[01;34m\\][ \[\e[01;32m\\]lf\[\e[01;34m\\] ]\[\e[00m\\] '$PS1
+    PS1='\[\e[01;34m\][ \[\e[01;32m\]lf\[\e[01;34m\] ]\[\e[00m\] '$PS1
 fi
 
 alias ll='ls -lah'
