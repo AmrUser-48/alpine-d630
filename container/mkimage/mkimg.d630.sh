@@ -14,6 +14,7 @@ profile_d630() {
         btrfs-progs dosfstools e2fsprogs ntfs-3g
         htop pciutils usbutils zstd xz
         bash neovim binutils ripgrep fd sed fzf python3
+        bat luajit dmenu st dwm
         mesa mesa-dri-gallium mesa-egl mesa-gl mesa-gles mesa-gbm
         xorg-server xf86-video-intel xf86-input-synaptics xf86-input-libinput
         xinit xauth xrandr xset
