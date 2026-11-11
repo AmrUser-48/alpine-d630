@@ -41,3 +41,7 @@ Remaining builds: Neovim, Python 3, Mesa (Crocus + Softpipe, LLVM disabled), Xor
 
 Release tag: `core2-checkpoint-2026-11-11-01` in `AmrUser-48/alpine-d630`.
 Archive SHA256: `0dc987053f83288042d351e78c6be3b2994090e059721fb70358977d464826a6`.
+
+## Runner shutdown result
+
+A host poweroff was requested but not authorized: `sudo` is blocked by the Desktop Commander command policy, and `systemctl poweroff` returned `Interactive authentication required`. The host was therefore left online; no build is running. To power it off, use the runner/provider console or an authorized administrator session. The Desktop Commander disconnect action only stops remote access and does not power off the host.
