@@ -1,0 +1,7 @@
+XTerm*termName: xterm-256color
+XTerm*faceName: Terminus
+XTerm*faceSize: 12
+XTerm*utf8: 2
+XTerm*locale: true
+XTerm*saveLines: 5000
+XTerm*geometry: 100x34
