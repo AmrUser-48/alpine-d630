@@ -24,6 +24,16 @@ APKINDEX="$BUILD/packages/repo/packages/x86_64/APKINDEX.tar.gz"
 }
 LOCAL_REPO="$BUILD/packages/repo/packages"
 
+# mkimage preserves its APKROOT cache and only seeds keys when creating it.
+# Refresh that root's trust store on every run so checkpoint and current local
+# APKs remain verifiable when their signing keys differ.
+APKROOT="$BUILD/work/mkimage-d630-cache/apkroot-x86_64"
+mkdir -p "$APKROOT/etc/apk/keys"
+for _key in /etc/apk/keys/*.pub; do
+    [ -f "$_key" ] || continue
+    install -m 0644 "$_key" "$APKROOT/etc/apk/keys/${_key##*/}"
+done
+
 export PACKAGER="D630 Alpine Builder <builder@localhost>"
 export PACKAGER_PUBKEY="$PACKAGER_PRIVKEY.pub"
 export SOURCE_DATE_EPOCH="$(git -C "$BUILD/aports" log -1 --format=%ct)"
