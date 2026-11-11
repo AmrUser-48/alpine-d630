@@ -16,6 +16,8 @@ mkdir -p "$TMP/etc/apk" "$TMP/etc/X11/xorg.conf.d" "$TMP/etc/profile.d" \
 for name in passwd group shadow inittab; do
     install -m 0644 "$FILES/base/$name" "$TMP/etc/$name"
 done
+chmod 0640 "$TMP/etc/shadow"
+chown 0:42 "$TMP/etc/shadow"
 
 cat > "$TMP/etc/apk/world" <<'EOF'
 alpine-base
