@@ -1,4 +1,4 @@
-# ALPINE-D630 // BUILD DIRECTIVE
+# T-800 // ALPINE-D630 BUILD DIRECTIVE
 
 STATUS: ACTIVE  
 TARGET: Dell Latitude D630  
@@ -142,4 +142,4 @@ Retain a known-good boot entry until every critical test passes.
 5. Keep generated output and private keys outside Git.
 6. Verify APKs, repository index, ISO and BIOS boot independently.
 
-DIRECTIVE: EXECUTE. VERIFY. REPORT FACTS.
+T-800 DIRECTIVE: EXECUTE. VERIFY. REPORT FACTS.
