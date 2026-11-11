@@ -21,6 +21,14 @@ CORE2_USERLAND_PACKAGES="
     doas
     e2fsprogs
     kbd
+    alsa-lib
+    alsa-utils
+    lame
+    sox
+    musl-locales
+    xterm
+    xrdb
+    lf
     openntpd
     openssl
     openssh
@@ -291,6 +299,18 @@ if s.count(old_path) != 1:
 s = s.replace(old_path, new_path, 1)
 p.write_text(s)
 PY_MESA
+    elif [ "$pkg" = lf ]; then
+        python3 - "$target_dir/APKBUILD" <<'PY_LF'
+from pathlib import Path
+import sys
+p = Path(sys.argv[1])
+s = p.read_text()
+needle = 'export GOTMPDIR="${GOTMPDIR:-"$srcdir"}"\n'
+replacement = needle + 'export GOAMD64=v1\n'
+if s.count(needle) != 1:
+    raise SystemExit("lf Go environment insertion point not unique")
+p.write_text(s.replace(needle, replacement, 1))
+PY_LF
     elif [ "$pkg" = busybox ]; then
         # Kbuild ignores abuild CFLAGS unless forwarded through CONFIG_EXTRA_CFLAGS.
         sed -i 's/CONFIG_EXTRA_CFLAGS="$_extra_cflags"/CONFIG_EXTRA_CFLAGS="$_extra_cflags $CFLAGS"/g' "$target_dir/APKBUILD"
@@ -343,7 +363,8 @@ docker run --rm \
         abuild -P /workspace/build/packages/repo index
         for pkg in \
             musl busybox apk-tools openrc chrony dhcpcd doas e2fsprogs \
-            kbd openntpd openssl openssh wget iw wpa_supplicant \
+            kbd alsa-lib alsa-utils lame sox musl-locales xterm xrdb lf \
+            openntpd openssl openssh wget iw wpa_supplicant \
             btrfs-progs dosfstools ntfs-3g htop pciutils usbutils zstd xz \
             bash binutils sed ripgrep fd bat fzf luajit neovim python3 mesa xorg-server \
             xf86-video-intel xf86-input-synaptics xf86-input-libinput dmenu st dwm
